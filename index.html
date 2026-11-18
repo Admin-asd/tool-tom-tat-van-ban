@@ -1,0 +1,244 @@
+<!doctype html>
+<!-- Vị trí file: wp-content/gb-tools/text-tools/cong-cu-tom-tat-van-ban.html -->
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Công cụ tóm tắt văn bản online - Text Summarizer</title>
+<meta name="description" content="Tóm tắt đoạn văn bản dài nhanh chóng trực tuyến. Tùy chỉnh độ dài và định dạng đầu ra linh hoạt ngay trên trình duyệt.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+<style type="text/tailwindcss">
+  @theme {
+    --font-sans: Roboto, ui-sans-serif, system-ui, sans-serif;
+    --color-primary: #fdca1e; --color-primary-hover: #e8b008; --color-primary-soft: #fffbeb;
+    --color-primary-ink: #9c6406; --color-ink: #0f172a; --color-neutral: #e2e8f0;
+  }
+</style>
+</head>
+<body class="bg-white font-sans text-ink antialiased">
+<main class="mx-auto max-w-4xl p-4 sm:p-6 space-y-6">
+  
+  <div class="bg-white border border-neutral rounded-2xl p-6 shadow-xs space-y-6">
+    
+    <!-- Nút Chia sẻ ở góc trên -->
+    <div class="flex items-center justify-between border-b border-neutral pb-4">
+      <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Công cụ tóm tắt thông minh</span>
+      <button type="button" onclick="shareTool()" class="min-h-9 rounded-xl border border-neutral px-3.5 font-semibold text-xs hover:border-primary bg-slate-50 cursor-pointer flex items-center gap-1.5 text-slate-700">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+        Chia sẻ
+      </button>
+    </div>
+
+    <!-- 1. Ô Nhập văn bản -->
+    <div class="space-y-2">
+      <label for="inputWorkspace" class="font-bold text-sm text-ink">Nhập văn bản</label>
+      <textarea id="inputWorkspace" rows="8" placeholder="Dán hoặc nhập đoạn văn bản dài của bạn vào đây..." class="w-full rounded-xl border border-neutral p-3.5 text-sm outline-none focus:border-primary bg-white resize-y leading-relaxed"></textarea>
+    </div>
+
+    <!-- 2. Tóm tắt Độ dài -->
+    <div class="space-y-2">
+      <label class="font-bold text-sm text-ink">Tóm tắt Độ dài</label>
+      <div id="lengthChips" class="flex flex-wrap gap-2 pt-1">
+        <button type="button" onclick="setLength('short', this)" class="px-4 py-2 rounded-xl font-bold text-xs bg-primary text-ink shadow-xs cursor-pointer border border-amber-300">Ngắn gọn ( 20 % )</button>
+        <button type="button" onclick="setLength('medium', this)" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer border border-neutral">Trung bình ( 40 % )</button>
+        <button type="button" onclick="setLength('detail', this)" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer border border-neutral">Chi tiết ( 60 % )</button>
+      </div>
+    </div>
+
+    <!-- 3. Định dạng đầu ra -->
+    <div class="space-y-2">
+      <label class="font-bold text-sm text-ink">Định dạng đầu ra</label>
+      <div id="formatChips" class="flex flex-wrap gap-2 pt-1">
+        <button type="button" onclick="setFormat('summary', this)" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer border border-neutral">Tóm tắt</button>
+        <button type="button" onclick="setFormat('bullet', this)" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer border border-neutral">Gạch đầu dòng</button>
+        <button type="button" onclick="setFormat('keypoints', this)" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer border border-neutral">Các điểm chính</button>
+        <button type="button" onclick="setFormat('keywords', this)" class="px-4 py-2 rounded-xl font-bold text-xs bg-primary text-ink shadow-xs cursor-pointer border border-amber-300">Từ khóa</button>
+      </div>
+    </div>
+
+    <!-- 4. Hàng nút thao tác -->
+    <div class="flex flex-wrap items-center gap-2 pt-1">
+      <button type="button" onclick="executeSummarize()" class="min-h-10 rounded-xl bg-primary px-6 font-bold text-xs text-ink hover:bg-primary-hover shadow-xs cursor-pointer">
+        Tóm tắt
+      </button>
+      <button type="button" onclick="clearText()" class="min-h-10 rounded-xl border border-neutral px-4 font-semibold text-xs hover:border-primary bg-slate-100 cursor-pointer">
+        Xóa
+      </button>
+      <button type="button" onclick="resetDefault()" class="min-h-10 rounded-xl border border-neutral px-4 font-semibold text-xs hover:border-primary bg-slate-100 cursor-pointer">
+        Đặt lại
+      </button>
+    </div>
+
+    <!-- Hướng dẫn trạng thái dưới cùng -->
+    <div class="text-center text-xs text-slate-400 py-1">
+      Nhập ít nhất 50 ký tự văn bản vào ô phía trên và nhấp vào Tóm tắt.
+    </div>
+
+    <!-- 5. Khu vực Kết quả (Ẩn ban đầu) -->
+    <div id="resultSection" class="space-y-3 pt-4 border-t border-neutral hidden">
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-sm text-ink">Kết quả tóm tắt</span>
+        <button type="button" onclick="copyResult()" class="text-xs font-bold text-primary-ink hover:underline cursor-pointer">Sao chép kết quả</button>
+      </div>
+      <div id="resultOutput" class="w-full rounded-xl border border-neutral p-4 text-sm bg-slate-50 leading-relaxed font-sans text-slate-700"></div>
+    </div>
+
+  </div>
+
+  <!-- Hộp Cách sử dụng (Y hệt mẫu) -->
+  <div class="bg-white border border-neutral rounded-2xl p-6 shadow-xs space-y-4">
+    <div class="font-bold text-base text-ink">Cách sử dụng</div>
+    <div class="space-y-3 text-xs text-slate-600">
+      <div class="flex items-start gap-3">
+        <div class="w-6 h-6 rounded-full bg-primary text-ink font-bold flex items-center justify-center shrink-0">1</div>
+        <div class="pt-1">Dán đoạn văn bản cần tóm tắt</div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="w-6 h-6 rounded-full bg-primary text-ink font-bold flex items-center justify-center shrink-0">2</div>
+        <div class="pt-1">Chọn độ dài tóm tắt (ngắn gọn, vừa phải, chi tiết)</div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="w-6 h-6 rounded-full bg-primary text-ink font-bold flex items-center justify-center shrink-0">3</div>
+        <div class="pt-1">Nhấp vào "Tóm tắt" để xử lý.</div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="w-6 h-6 rounded-full bg-primary text-ink font-bold flex items-center justify-center shrink-0">4</div>
+        <div class="pt-1">Xem lại và sao chép phần tóm tắt.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hộp Tính năng (Y hệt mẫu) -->
+  <div class="bg-white border border-neutral rounded-2xl p-6 shadow-xs space-y-4">
+    <div class="font-bold text-base text-ink">Tính năng</div>
+    <div class="space-y-2 text-xs text-slate-700">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span>Độ dài tóm tắt có thể điều chỉnh</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span>Trích xuất điểm chính</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span>Lựa chọn câu quan trọng</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span>Giữ lại các ý chính</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span>Xử lý nhanh</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  let currentLength = 'short'; // Mặc định 20%
+  let currentFormat = 'keywords'; // Mặc định từ khóa
+
+  async function gbCopy(text) {
+    try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+    const t = document.createElement('textarea'); t.value = text; t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok;
+  }
+
+  function setLength(len, btn) {
+    currentLength = len;
+    const parent = document.getElementById('lengthChips');
+    Array.from(parent.children).forEach(b => {
+      b.className = 'px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer border border-neutral';
+    });
+    btn.className = 'px-4 py-2 rounded-xl font-bold text-xs bg-primary text-ink shadow-xs cursor-pointer border border-amber-300';
+  }
+
+  function setFormat(fmt, btn) {
+    currentFormat = fmt;
+    const parent = document.getElementById('formatChips');
+    Array.from(parent.children).forEach(b => {
+      b.className = 'px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer border border-neutral';
+    });
+    btn.className = 'px-4 py-2 rounded-xl font-bold text-xs bg-primary text-ink shadow-xs cursor-pointer border border-amber-300';
+  }
+
+  function executeSummarize() {
+    const text = document.getElementById('inputWorkspace').value.trim();
+    if (text.length < 20) {
+      alert('Vui lòng nhập đoạn văn bản dài hơn (ít nhất 50 ký tự) để thực hiện tóm tắt!');
+      return;
+    }
+
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    
+    // Tính toán số lượng câu/ý dựa theo tỷ lệ độ dài người dùng chọn
+    let ratio = 0.2; // Ngắn gọn (20%)
+    if (currentLength === 'medium') ratio = 0.4; // Trung bình (40%)
+    if (currentLength === 'detail') ratio = 0.6; // Chi tiết (60%)
+
+    let targetCount = Math.ceil(sentences.length * ratio);
+    if (targetCount < 1) targetCount = 1;
+
+    let outputHtml = '';
+
+    if (currentFormat === 'bullet') {
+      outputHtml = '<ul class="list-disc pl-5 space-y-1.5">';
+      sentences.slice(0, targetCount).forEach(s => { outputHtml += `<li>${s.trim()}.</li>`; });
+      outputHtml += '</ul>';
+    } else if (currentFormat === 'keypoints') {
+      outputHtml = '<div class="space-y-2">';
+      sentences.slice(0, targetCount).forEach((s, idx) => { outputHtml += `<div><strong>Điểm ${idx + 1}:</strong> ${s.trim()}.</div>`; });
+      outputHtml += '</div>';
+    } else if (currentFormat === 'keywords') {
+      outputHtml = '<div class="flex flex-wrap gap-2">';
+      const words = text.split(/\s+/).filter(w => w.length > 4);
+      // Lấy số lượng từ khóa linh hoạt theo tỷ lệ độ dài
+      let keywordCount = Math.ceil(words.length * ratio) + 3;
+      const uniqueWords = [...new Set(words)].slice(0, keywordCount);
+      uniqueWords.forEach(w => {
+        outputHtml += `<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 font-mono text-xs font-bold">#${w.replace(/[.,]/g, '')}</span>`;
+      });
+      outputHtml += '</div>';
+    } else {
+      // Dạng tóm tắt đoạn văn thông thường
+      outputHtml = `<p>${sentences.slice(0, targetCount).join('. ')}.</p>`;
+    }
+
+    document.getElementById('resultOutput').innerHTML = outputHtml;
+    document.getElementById('resultSection').classList.remove('hidden');
+  }
+
+  function clearText() {
+    document.getElementById('inputWorkspace').value = '';
+    document.getElementById('resultSection').classList.add('hidden');
+  }
+
+  function resetDefault() {
+    document.getElementById('inputWorkspace').value = '';
+    document.getElementById('resultSection').classList.add('hidden');
+  }
+
+  async function copyResult() {
+    const text = document.getElementById('resultOutput').innerText;
+    const ok = await gbCopy(text);
+    if (ok) alert('Đã sao chép phần tóm tắt vào bộ nhớ tạm!');
+  }
+
+  async function shareTool() {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Text Summarizer', url: window.location.href });
+      } catch (e) {}
+    } else {
+      alert('Đã sao chép liên kết công cụ vào bộ nhớ tạm!');
+      navigator.clipboard.writeText(window.location.href);
+    }
+  }
+</script>
+</body>
+</html>
